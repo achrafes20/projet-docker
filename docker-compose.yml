@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  php:
+    image: achrafes20/dev-php-laravel-angular:latest
+    container_name: php-container
+    volumes:
+      - ./src/laravel:/var/www/html
+    ports:
+      - "9000:9000"
+    environment:
+      - DB_HOST=mysql
+      - DB_DATABASE=dev_db
+      - DB_USERNAME=dev_user
+      - DB_PASSWORD=dev_password
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-container
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src/laravel:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: dev_db
+      MYSQL_USER: dev_user
+      MYSQL_PASSWORD: dev_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3307:3306"  # Changed to 3307 to avoid conflict with local MySQL
+    networks:
+      - app-network
+
+  angular:
+    image: node:18
+    container_name: angular-container
+    volumes:
+      - ./src/angular:/usr/src/app
+    working_dir: /usr/src/app
+    ports:
+      - "4200:4200"
+    command: >
+      sh -c "npm install -g @angular/cli &&
+             if [ ! -d \"angular-app\" ]; then
+               ng new angular-app --defaults --skip-install &&
+               cd angular-app &&
+               npm install;
+             else
+               cd angular-app;
+             fi &&
+             ng serve --host 0.0.0.0 --disable-host-check"
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
