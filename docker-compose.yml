@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   php:
-    image: votredockerhub/dev-php-laravel-angular:latest
+    image: achrafes20/dev-php-laravel-angular:latest
     container_name: php-container
     volumes:
       - ./src/laravel:/var/www/html
