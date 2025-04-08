@@ -2,13 +2,12 @@ version: '3.8'
 
 services:
   php:
-    build:
-      context: ./docker/php
+    image: votredockerhub/dev-php-laravel-angular:latest
     container_name: php-container
     volumes:
       - ./src/laravel:/var/www/html
     ports:
-      - "9000:9000"  # Changed from 8000:80 to avoid conflict with Apache
+      - "9000:9000"
     environment:
       - DB_HOST=mysql
       - DB_DATABASE=dev_db
