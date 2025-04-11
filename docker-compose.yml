@@ -3,9 +3,7 @@ version: '3.8'
 services:
   # PHP Service
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: achrafes20/backend-web:latest
     volumes:
       - ./backend:/var/www
     environment:
@@ -58,9 +56,7 @@ services:
 
   # Angular Service
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: achrafes20/frontend-web:latest
     ports:
       - "4200:4200"
     volumes:
